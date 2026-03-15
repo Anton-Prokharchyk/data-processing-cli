@@ -1,1 +1,1 @@
-const logWorker = (msg) => console.log(msg);
+export const logWorker = (msg) => console.log(msg);

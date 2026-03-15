@@ -1,1 +1,1 @@
-const logStats = () => {console.log('stats')};
+export const logStats = () => {console.log('stats')};
