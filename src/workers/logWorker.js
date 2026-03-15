@@ -1,0 +1,1 @@
+const logWorker = (msg) => console.log(msg);
