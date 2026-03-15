@@ -10,8 +10,6 @@ export const encrypt = async ( input, output, password ) => {
           if(!isValidPathToFile) throw new Error();
       
   return new Promise((resolve) => {
-
-
     const salt = crypto.randomBytes(16);
     const iv = crypto.randomBytes(12);
 
