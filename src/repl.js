@@ -2,9 +2,15 @@ import path from 'node:path';
 import readline from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 
+import { count } from './commands/count.js';
 import { csvToJson } from './commands/csvToJson.js';
-import { getArgs } from './utils/argParser.js';
+import { decrypt } from './commands/decrypt.js';
+import { encrypt } from './commands/encrypt.js';
+import { hash } from './commands/hash.js';
+import { hashCompare } from './commands/hashCompare.js';
+import { jsonToCsv } from './commands/jsonToCsv.js';
 import { allowCd, goUp, listDir } from './navigation.js';
+import { getArgs } from './utils/argParser.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,7 +25,13 @@ const COMMANDS = {
     up : 'up',
     cd : 'cd',
     ls : 'ls',
+    hash : 'hash',
+    encrypt : 'encrypt',
+    decrypt : 'decrypt',
+    hashCompare : 'hash-compare',
+    count : 'count',
     csvToJson : 'csv-to-json',
+    jsonToCsv : 'json-to-csv',
     exit : '.exit'
 }
 
@@ -53,20 +65,126 @@ export const repl = async ({exitmsg, wlcmsg, invalidCmdMsg, operFailedMsg}) => {
         
         switch(cmd) {
             case COMMANDS.csvToJson:
-                const { input : inputPath, output : outputPath } = args;
-                if(!inputPath || !outputPath) {
-                    print(operFailedMsg);
+                {
+                    const { input : inputPath, output : outputPath } = args;
+                    if(!inputPath || !outputPath) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        await csvToJson(inputPath, outputPath);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
                     break;
                 }
-                try {
-
-                    await csvToJson(inputPath, outputPath);
-                } catch(e) {
-                    print(operFailedMsg);
+            case COMMANDS.jsonToCsv:
+                {
+                    const { input : inputPath, output : outputPath } = args;
+                    if(!inputPath || !outputPath) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        await jsonToCsv(inputPath, outputPath);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
                     break;
                 }
-                printCurrentDir(currentDir);
-                break;
+            case COMMANDS.count:
+                {
+                    const { input : inputPath} = args;
+                    if(!inputPath) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        const res = await count(inputPath);
+                        print(res);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
+                    break;
+                }
+            case COMMANDS.hash:
+                {
+                    const { input : inputPath, algorithm = 'sha256', save = false} = args;
+                    if(!inputPath) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        const res = await hash(inputPath, algorithm, save);
+                        print(res);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
+                    break;
+                }
+            case COMMANDS.hashCompare:
+                {
+                    const { input : inputPath, algorithm = 'sha256', hash } = args;
+                    if(!inputPath || !hash) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        await hashCompare(inputPath, hash, algorithm);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
+                    break;
+                }
+            case COMMANDS.decrypt:
+                {
+                    const { input : inputPath, output : outputPath, password } = args;
+                    if(!inputPath || !outputPath || !password) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        await decrypt(inputPath, outputPath, password);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
+                    break;
+                }
+            case COMMANDS.encrypt:
+                {
+                    const { input : inputPath, output : outputPath, password } = args;
+                    if(!inputPath || !outputPath || !password) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        await encrypt(inputPath, outputPath, password);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
+                    break;
+                }
             case COMMANDS.up:
                 currentDir = goUp(currentDir);
                 printCurrentDir(currentDir);

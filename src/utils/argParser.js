@@ -3,8 +3,8 @@ export const getArgs = (line) => {
     const argsObj = {}
     for(const item of args) {
         item.split('');
-        const [key, value] = item.split(' ');
-        argsObj[key] = value;
+        const [key, value] = item.split(' ');;
+        argsObj[key] = value || true;
     }
     return argsObj;
 };
