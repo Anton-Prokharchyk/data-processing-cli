@@ -3,6 +3,7 @@ import readline from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 
 import { count } from './commands/count.js';
+import { logStats } from './commands/logStats.js';
 import { csvToJson } from './commands/csvToJson.js';
 import { decrypt } from './commands/decrypt.js';
 import { encrypt } from './commands/encrypt.js';
@@ -26,6 +27,7 @@ const COMMANDS = {
     cd : 'cd',
     ls : 'ls',
     hash : 'hash',
+    logStats : 'log-stats',
     encrypt : 'encrypt',
     decrypt : 'decrypt',
     hashCompare : 'hash-compare',
@@ -61,9 +63,25 @@ export const repl = async ({exitmsg, wlcmsg, invalidCmdMsg, operFailedMsg}) => {
         const input = await rl.question('>');
         const cmd = input.split(' ')[0];
         const args = getArgs(input.split(' ').slice(1).join(' '));
-        console.log(cmd);
         
         switch(cmd) {
+            case COMMANDS.logStats:
+                {
+                    const { input : inputPath, output : outputPath } = args;
+                    if(!inputPath || !outputPath) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    try {
+                        
+                        await logStats(inputPath, outputPath);
+                    } catch(e) {
+                        print(operFailedMsg);
+                        break;
+                    }
+                    printCurrentDir(currentDir);
+                    break;
+                }
             case COMMANDS.csvToJson:
                 {
                     const { input : inputPath, output : outputPath } = args;
