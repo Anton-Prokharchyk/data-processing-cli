@@ -5,9 +5,9 @@ import { checkIsValidPathToFile, pathResolver } from '../utils/pathResolver.js';
 
 export const encrypt = async ( input, output, password ) => {
     const inputPath = await pathResolver(input);
-      const outputPath = await pathResolver(output);
-          const isValidPathToFile = await checkIsValidPathToFile(inputPath);
-          if(!isValidPathToFile) throw new Error();
+    const outputPath = await pathResolver(output);
+    const isValidPathToFile = await checkIsValidPathToFile(inputPath);
+    if(!isValidPathToFile) throw new Error();
       
   return new Promise((resolve) => {
     const salt = crypto.randomBytes(16);
